@@ -29,14 +29,14 @@ def browsePage():
         data[i] = (inx_match.group("inx") if inx_match else 0,
                    element_img.get("src"),
                    element_img.get("alt"))
-    print(data)
+    return data
         
 def main():
     """
     entry point for guru_tabi
     """
 
-    browsePage()
+    data = browsePage()
     
 if __name__ == '__main__':
     print("guru_tabi v0.1")
