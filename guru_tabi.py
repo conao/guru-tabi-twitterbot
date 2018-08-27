@@ -41,7 +41,7 @@ def writeData(data, dt):
 
     for line in data:
         if np.all(df["inx"] != line[0]):
-            print(line)
+            postTwitter(line)
         
     df = pd.concat([df, pd.DataFrame(data)])
     df = df.drop_duplicates("inx")
@@ -63,7 +63,9 @@ def postTwitter(linedata):
     
 
     text = "Guru-tabi Test3"
-    t.statuses.update(status=text)
+    # t.statuses.update(status=text)
+
+    print(linedata[0])
     
 def main():
     """
@@ -78,4 +80,3 @@ if __name__ == '__main__':
     print("guru_tabi v0.1")
 
 main()
-postTwitter((4,3))
