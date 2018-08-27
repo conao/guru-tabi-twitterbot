@@ -2,6 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
 
 """
 guru_tabi is twitter-bot for guru-tabi(https://gurutabi.gnavi.co.jp/a/).
