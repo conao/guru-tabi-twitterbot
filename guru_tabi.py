@@ -25,9 +25,13 @@ def browsePage(dt):
     for (i, panel) in enumerate(panels):
         element_a = panel.find("a")
         element_img = panel.find("img")
+        str_area = panel.find("p", attrs = {"class": "panel__layer-txt"}).text
+        str_author = panel.find("p", attrs = {"class": "panel__writer"}).text
         inx_match = re_inx.search(element_a.get("href"))
         # pdb.set_trace()
         data[i] = (inx_match.group("inx") if inx_match else 0,
+                   str_area,
+                   str_author,
                    element_img.get("alt"),
                    element_a.get("href"),
                    element_img.get("src"))
@@ -50,10 +54,17 @@ def writeData(data, dt):
     df.to_csv(data_filename, index=False)
 
 def postTwitter(linedata):
-    if not linedata[2].startswith("http"):
-        linedata[2] = "https:" + linedata[2]
-    if not linedata[3].startswith("http"):
-        linedata[3] = "https:" + linedata[3]
+    i_inx = 0
+    i_area = 1
+    i_author = 2
+    i_description = 3
+    i_url = 4
+    i_img_url = 5
+
+    if not linedata[i_url].startswith("http"):
+        linedata[i_url] = "https:" + linedata[i_url]
+    if not linedata[i_img_url].startswith("http"):
+        linedata[i_img_url] = "https:" + linedata[i_img_url]
     
     consumer_key = "UtVxSquH0tf0iKQpvOha7nFzg"
     consumer_secret = "eI2pQUz2t2bVkFwOQg04ztw81Xyf5BNjRtNlt26uMWqBZWDU36"
@@ -68,8 +79,8 @@ def postTwitter(linedata):
     t = twitter.Twitter(auth = t_auth)
     
 
-    text = "%s %s" % (linedata[1], linedata[2])
-    img_url = linedata[3]
+    text = "%s(%s) - %s %s" % (linedata[i_description], linedata[i_author], linedata[i_area], linedata[i_url])
+    img_url = linedata[i_img_url]
     r = requests.get(img_url)
     imgdata = r.content
 
@@ -77,12 +88,12 @@ def postTwitter(linedata):
     id_img = img_upload.media.upload(media = imgdata)["media_id_string"]
     t.statuses.update(status = text, media_ids = ",".join([id_img]))
     
-    with open("img/%s.jpg" % linedata[0], "wb") as fout:
+    with open("img/%s.jpg" % linedata[i_inx], "wb") as fout:
         fout.write(imgdata)
         
     # t.statuses.update(status=text)
 
-    print(linedata[0])
+    print(linedata[i_inx])
     
 def main():
     """
@@ -90,6 +101,8 @@ def main():
     """
 
     dt = np.dtype([('inx', np.int),
+                   ('area', np.unicode_, 256),
+                   ('author', np.unicode_, 32),
                    ('name', np.unicode_, 256),
                    ('url', np.unicode_, 512),
                    ('img_url', np.unicode_, 512)])
