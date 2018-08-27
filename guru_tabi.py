@@ -7,6 +7,7 @@ import numpy as np
 import re
 import pdb
 import os
+import twitter
 
 """
 guru_tabi is twitter-bot for guru-tabi(https://gurutabi.gnavi.co.jp/a/).
@@ -46,6 +47,23 @@ def writeData(data, dt):
     df = df.drop_duplicates("inx")
 
     df.to_csv(data_filename, index=False)
+
+def postTwitter(linedata):
+    consumer_key = "UtVxSquH0tf0iKQpvOha7nFzg"
+    consumer_secret = "eI2pQUz2t2bVkFwOQg04ztw81Xyf5BNjRtNlt26uMWqBZWDU36"
+    
+    twitter_creds = os.path.expanduser("~/.secret/guru_tabi_twitter")
+    if not os.path.exists(twitter_creds):
+        twitter.oauth_dance("guru_tabi", consumer_key, consumer_secret, twitter_creds)
+
+    oauth_token, oauth_secret = twitter.read_token_file(twitter_creds)
+    
+    # nauth = twitter.OAuth()        
+    t = twitter.Twitter(auth=twitter.OAuth(oauth_token, oauth_secret, consumer_key, consumer_secret))
+    
+
+    text = "Guru-tabi Test3"
+    t.statuses.update(status=text)
     
 def main():
     """
@@ -60,3 +78,4 @@ if __name__ == '__main__':
     print("guru_tabi v0.1")
 
 main()
+postTwitter((4,3))
