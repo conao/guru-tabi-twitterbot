@@ -28,8 +28,9 @@ def browsePage(dt):
         inx_match = re_inx.search(element_a.get("href"))
         # pdb.set_trace()
         data[i] = (inx_match.group("inx") if inx_match else 0,
-                   element_img.get("src"),
-                   element_img.get("alt"))
+                   element_img.get("alt"),
+                   element_a.get("href"),
+                   element_img.get("src"))
     return data
 
 def writeData(data, dt):
@@ -72,7 +73,10 @@ def main():
     entry point for guru_tabi
     """
 
-    dt = np.dtype([('inx', np.int), ('url', np.unicode_, 512), ('name', np.unicode_, 256)])
+    dt = np.dtype([('inx', np.int),
+                   ('name', np.unicode_, 256),
+                   ('url', np.unicode_, 512),
+                   ('img_url', np.unicode_, 512)])
     data = browsePage(dt)
     writeData(data, dt)
     
