@@ -37,11 +37,15 @@ def writeData(data, dt):
         df = pd.read_csv(data_filename)
     else:
         df = pd.DataFrame(np.empty(0, dtype = dt))
+
+    for line in data:
+        if np.all(df["inx"] != line[0]):
+            print(line)
         
     df = pd.concat([df, pd.DataFrame(data)])
-    df.drop_duplicates("inx")
+    df = df.drop_duplicates("inx")
 
-    df.to_csv(data_filename)
+    df.to_csv(data_filename, index=False)
     
 def main():
     """
