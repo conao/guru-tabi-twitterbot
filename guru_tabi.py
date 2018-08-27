@@ -50,6 +50,11 @@ def writeData(data, dt):
     df.to_csv(data_filename, index=False)
 
 def postTwitter(linedata):
+    if not linedata[2].startswith("http"):
+        linedata[2] = "https:" + linedata[2]
+    if not linedata[3].startswith("http"):
+        linedata[3] = "https:" + linedata[3]
+    
     consumer_key = "UtVxSquH0tf0iKQpvOha7nFzg"
     consumer_secret = "eI2pQUz2t2bVkFwOQg04ztw81Xyf5BNjRtNlt26uMWqBZWDU36"
     
@@ -59,11 +64,22 @@ def postTwitter(linedata):
 
     oauth_token, oauth_secret = twitter.read_token_file(twitter_creds)
     
-    # nauth = twitter.OAuth()        
-    t = twitter.Twitter(auth=twitter.OAuth(oauth_token, oauth_secret, consumer_key, consumer_secret))
+    t_auth = twitter.OAuth(oauth_token, oauth_secret, consumer_key, consumer_secret)
+    t = twitter.Twitter(auth = t_auth)
     
 
-    text = "Guru-tabi Test3"
+    text = "%s %s" % (linedata[1], linedata[2])
+    img_url = linedata[3]
+    r = requests.get(img_url)
+    imgdata = r.content
+
+    img_upload = twitter.Twitter(domain='upload.twitter.com', auth = t_auth)
+    id_img = img_upload.media.upload(media = imgdata)["media_id_string"]
+    t.statuses.update(status = text, media_ids = ",".join([id_img]))
+    
+    with open("img/%s.jpg" % linedata[0], "wb") as fout:
+        fout.write(imgdata)
+        
     # t.statuses.update(status=text)
 
     print(linedata[0])
