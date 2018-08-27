@@ -17,7 +17,7 @@ def browsePage():
     soup = BeautifulSoup(r.text, 'lxml')
     panels = soup.find_all("li", attrs = {"class": "col-4"})
 
-    re_inx = re.compile(r"/a_(?P<inx>[0]*)/")
+    re_inx = re.compile(r"/a_(?P<inx>[0-9]*)/")
     dt = np.dtype([('inx', np.int), ('url', np.unicode_, 512), ('name', np.unicode_, 256)])
     data = np.empty(len(panels), dtype = dt)
     
