@@ -8,6 +8,7 @@ import re
 import pdb
 import os
 import twitter
+import feedgenerator
 
 """
 guru_tabi is twitter-bot for guru-tabi(https://gurutabi.gnavi.co.jp/a/).
