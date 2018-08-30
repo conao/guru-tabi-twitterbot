@@ -39,6 +39,13 @@ def browsePage(dt):
     return data
 
 def writeData(data, dt):
+    i_inx = 0
+    i_area = 1
+    i_author = 2
+    i_description = 3
+    i_url = 4
+    i_img_url = 5
+    
     data_filename = "data.csv"
     if os.path.exists(data_filename):
         df = pd.read_csv(data_filename)
@@ -46,27 +53,30 @@ def writeData(data, dt):
         df = pd.DataFrame(np.empty(0, dtype = dt))
 
     for line in data:
-        if np.all(df["inx"] != line[0]):
-            postTwitter(line)
+        imgdatas = []
+        if np.all(df["inx"] != line[i_inx]):
+            if not line[i_url].startswith("http"):
+                line[i_url] = "https:" + line[i_url]
+            if not line[i_img_url].startswith("http"):
+                line[i_img_url] = "https:" + line[i_img_url]
+
+            r = requests.get(line[i_img_url])
+            imgdata = r.content
+            
+            with open("img/%s.jpg" % line[i_inx], "wb") as fout:
+                fout.write(imgdata)
+
+            imgdatas.append(imgdata)
         
+            print(line[i_inx])
+            postTwitter(line, imgdatas)
+            
     df = pd.concat([df, pd.DataFrame(data)])
     df = df.drop_duplicates("inx")
 
     df.to_csv(data_filename, index=False)
 
-def postTwitter(linedata):
-    i_inx = 0
-    i_area = 1
-    i_author = 2
-    i_description = 3
-    i_url = 4
-    i_img_url = 5
-
-    if not linedata[i_url].startswith("http"):
-        linedata[i_url] = "https:" + linedata[i_url]
-    if not linedata[i_img_url].startswith("http"):
-        linedata[i_img_url] = "https:" + linedata[i_img_url]
-    
+def postTwitter(text, imgdatas = []):
     consumer_key = "UtVxSquH0tf0iKQpvOha7nFzg"
     consumer_secret = "eI2pQUz2t2bVkFwOQg04ztw81Xyf5BNjRtNlt26uMWqBZWDU36"
     
@@ -78,24 +88,17 @@ def postTwitter(linedata):
     
     t_auth = twitter.OAuth(oauth_token, oauth_secret, consumer_key, consumer_secret)
     t = twitter.Twitter(auth = t_auth)
-    
 
-    text = "%s(%s) - %s %s" % (linedata[i_description], linedata[i_author], linedata[i_area], linedata[i_url])
-    img_url = linedata[i_img_url]
-    r = requests.get(img_url)
-    imgdata = r.content
-
-    img_upload = twitter.Twitter(domain='upload.twitter.com', auth = t_auth)
-    id_img = img_upload.media.upload(media = imgdata)["media_id_string"]
+    if imgdatas:
+        img_ids = []
+        for imgdata in imgdatas:
+            img_upload = twitter.Twitter(domain='upload.twitter.com', auth = t_auth)
+            img_id = img_upload.media.upload(media = imgdata)["media_id_string"]
+            img_ids.append(img_id)
     t.statuses.update(status = text, media_ids = ",".join([id_img]))
-    
-    with open("img/%s.jpg" % linedata[i_inx], "wb") as fout:
-        fout.write(imgdata)
-        
+            
     # t.statuses.update(status=text)
 
-    print(linedata[i_inx])
-    
 def main():
     """
     entry point for guru_tabi
