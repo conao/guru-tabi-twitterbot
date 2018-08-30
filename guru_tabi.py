@@ -19,7 +19,7 @@ guru_tabi is twitter-bot for guru-tabi(https://gurutabi.gnavi.co.jp/a/).
 ####  small funcs
 
 def addHttpScheme(target, ishttp = False):
-    scheme = "http" if ishttp else "https"
+    scheme = "http:" if ishttp else "https:"
     result = target
     
     if not target.startswith(scheme):
@@ -84,8 +84,12 @@ def writeData(data, dt):
 
             imgdatas.append(imgdata)
         
-            print(line[i_inx])
-            postTwitter(line, imgdatas)
+            text = "%s(%s) - %s %s" % (line[i_description],
+                                       line[i_author],
+                                       line[i_area],
+                                       line[i_url])
+            print(text)
+            postTwitter(text, imgdatas)
             
     df = pd.concat([df, pd.DataFrame(data)])
     df = df.drop_duplicates("inx")
@@ -111,9 +115,7 @@ def postTwitter(text, imgdatas = []):
             img_upload = twitter.Twitter(domain='upload.twitter.com', auth = t_auth)
             img_id = img_upload.media.upload(media = imgdata)["media_id_string"]
             img_ids.append(img_id)
-    t.statuses.update(status = text, media_ids = ",".join([img_ids]))
-            
-    # t.statuses.update(status=text)
+    t.statuses.update(status = text, media_ids = ",".join(img_ids))
 
 def main():
     """
