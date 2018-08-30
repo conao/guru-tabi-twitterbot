@@ -138,3 +138,4 @@ venv.bak/
 #### specific ignore files ####
 data.csv
 /img/
+/rss.xml
