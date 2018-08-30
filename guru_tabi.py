@@ -14,6 +14,24 @@ import feedgenerator
 guru_tabi is twitter-bot for guru-tabi(https://gurutabi.gnavi.co.jp/a/).
 """
 
+####################
+####
+####  small funcs
+
+def addHttpScheme(target, ishttp = False):
+    scheme = "http" if ishttp else "https"
+    result = target
+    
+    if not target.startswith(scheme):
+        result = scheme + target
+
+    return result
+
+
+####################
+####
+####  main funcs
+
 def browsePage(dt):
     target_url = 'https://gurutabi.gnavi.co.jp/a/'
     r = requests.get(target_url)
@@ -55,10 +73,8 @@ def writeData(data, dt):
     for line in data:
         imgdatas = []
         if np.all(df["inx"] != line[i_inx]):
-            if not line[i_url].startswith("http"):
-                line[i_url] = "https:" + line[i_url]
-            if not line[i_img_url].startswith("http"):
-                line[i_img_url] = "https:" + line[i_img_url]
+            line[i_url] = addHttpScheme(line[i_url])
+            line[i_img_url] = addHttpScheme(line[i_img_url])
 
             r = requests.get(line[i_img_url])
             imgdata = r.content
