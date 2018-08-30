@@ -9,10 +9,22 @@ import pdb
 import os
 import twitter
 import feedgenerator
+import datetime
 
 """
 guru_tabi is twitter-bot for guru-tabi(https://gurutabi.gnavi.co.jp/a/).
 """
+
+####################
+####
+####  constants
+
+i_inx = 0
+i_area = 1
+i_author = 2
+i_description = 3
+i_url = 4
+i_img_url = 5
 
 ####################
 ####
@@ -27,7 +39,34 @@ def addHttpScheme(target, ishttp = False):
 
     return result
 
+def outputRss(df):
+    title = "tabi-bot"
+    link = "http://conao3.sakura.ne.jp/apps/tabi-bot/"
+    feed_link = "http://conao3.sakura.ne.jp/apps/tabi-bot/feed.xml"
+    description = "tabi-bot"
 
+    feed = feedgenerator.Rss201rev2Feed(title = title,
+                                        link = link,
+                                        feed_link = feed_link,
+                                        description = description,
+                                        language = 'ja')
+
+    for line in df.itertuples():
+        # pdb.set_trace()
+        title = '%s(%s) - %s %s' % (line.name, line.author, line.area, line.url)
+        link = line.url
+        description = line.name
+        pubdate = datetime.datetime.now()
+        unique_id = str(line.inx)
+        feed.add_item(title = title,
+                      link = link,
+                      description = description,
+                      pubdate = pubdate,
+                      unique_id = unique_id)
+
+    with open('rss.xml', mode = 'w') as f:
+        f.write(feed.writeString("utf-8"))
+    
 ####################
 ####
 ####  main funcs
@@ -57,13 +96,6 @@ def browsePage(dt):
     return data
 
 def writeData(data, dt):
-    i_inx = 0
-    i_area = 1
-    i_author = 2
-    i_description = 3
-    i_url = 4
-    i_img_url = 5
-    
     data_filename = 'data.csv'
     if os.path.exists(data_filename):
         df = pd.read_csv(data_filename)
@@ -95,7 +127,8 @@ def writeData(data, dt):
     df = df.drop_duplicates('inx')
 
     df.to_csv(data_filename, index=False)
-
+    return df
+    
 def postTwitter(text, imgdatas = []):
     consumer_key = 'UtVxSquH0tf0iKQpvOha7nFzg'
     consumer_secret = 'eI2pQUz2t2bVkFwOQg04ztw81Xyf5BNjRtNlt26uMWqBZWDU36'
@@ -129,7 +162,8 @@ def main():
                    ('url', np.unicode_, 512),
                    ('img_url', np.unicode_, 512)])
     data = browsePage(dt)
-    writeData(data, dt)
+    df = writeData(data, dt)
+    outputRss(df)
     
 if __name__ == '__main__':
     print('guru_tabi v0.1')
