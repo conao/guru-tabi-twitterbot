@@ -111,7 +111,7 @@ def postTwitter(text, imgdatas = []):
             img_upload = twitter.Twitter(domain='upload.twitter.com', auth = t_auth)
             img_id = img_upload.media.upload(media = imgdata)["media_id_string"]
             img_ids.append(img_id)
-    t.statuses.update(status = text, media_ids = ",".join([id_img]))
+    t.statuses.update(status = text, media_ids = ",".join([img_ids]))
             
     # t.statuses.update(status=text)
 
