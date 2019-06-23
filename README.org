@@ -1,7 +1,7 @@
 #+author: conao3
 #+date: <2018-10-25 Thu>
 
-[[https://github.com/conao3/guru-tabi-twitterbot.py][https://raw.githubusercontent.com/conao3/files/master/header/png/guru-tabi-twitterbot.py.png]]
+[[https://github.com/conao3/guru-tabi-twitterbot.py][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/guru-tabi-twitterbot.py.png]]
 [[https://github.com/conao3/guru-tabi-twitterbot.py/blob/master/LICENSE][https://img.shields.io/github/license/conao3/guru-tabi-twitterbot.py.svg?style=flat-square]]
 [[https://github.com/conao3/guru-tabi-twitterbot.py/releases][https://img.shields.io/github/tag/conao3/guru-tabi-twitterbot.py.svg?style=flat-square]]
 [[https://travis-ci.org/conao3/guru-tabi-twitterbot.py][https://img.shields.io/travis/conao3/guru-tabi-twitterbot.py/master.svg?style=flat-square]]
